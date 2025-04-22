@@ -1,0 +1,84 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: Chi tiết đơn hàng >> 008 - Lấy chi tiết đơn hàng theo ID
+- Location: D:\Automation-API\tests\03-customer-orders.spec.ts:33:7
+
+# Error details
+
+```
+Error: expect(received).toHaveProperty(path)
+
+Expected path: "success"
+Received path: []
+
+Received value: {"body": {"billTypeId": 18, "branchAddress": "350 võ văn kiệt, Phường Cô Giang Quận 1, Hồ Chí Minh", "branchId": 1200, "branchPhone": "09078253699", "centerId": 12869, "confirmDate": null, "createdDate": "2024-08-30T11:23:00", "customerAddress": "47/24/38 Bùi Đình Túy, phường 24, Bình Thạnh, Hồ Chí Minh", "customerEmail": "loitln.erp@cellphones.com.vn", "customerName": "Trần Lê Lợi", "customerNote": null, "customerPhone": "09****5482", "deliveredDate": "2024-08-30T11:23:00", "deliveringDate": "2024-08-30T11:27:53.81", "deliveryNo": null, "deliveryTypeId": null, "discountAmount": 0, "finishImages": [], "id": "b7a2af665ebfa3113b883add41052aad", "invoiceFeeId": null, "invoiceFeeUrl": "", "invoiceId": "aa92affd-9760-4392-8974-c1c12ea6eb25", "invoiceUrl": "http://stg-view-hddt.cps.onl/Viewer/HoaDonViewer.aspx?mhd=aa92affd-9760-4392-8974-c1c12ea6eb25", "invoiceVat8Id": "16458ed5-715e-47b0-aa95-09506eb32d37", "invoiceVat8Url": "http://stg-view-hddt.cps.onl/Viewer/HoaDonViewer.aspx?mhd=16458ed5-715e-47b0-aa95-09506eb32d37", "isPayDept": false, "methodId": 15, "orderCode": "01200S2408000010", "orderDate": "2024-08-30T11:23:00", "orderDetails": [{"amount": 54000000, "careEndDate": null, "careStartDate": null, "imei": null, "isGift": false, "isGiftCancel": false, "isGiftFinish": false, "isOldProduct": false, "itemDiscountAmount": 0, "licenseKeys": null, "price": 5400000, "productCode": "PKTM.002.W", "productId": 49304, "productName": "MÁY LỌC KHÔNG KHI XIAOMI MI AIR PURIFIER 2C TRẮNG", "quantity": 10}, {"amount": 98000, "careEndDate": null, "careStartDate": null, "imei": null, "isGift": false, "isGiftCancel": false, "isGiftFinish": false, "isOldProduct": false, "itemDiscountAmount": 0, "licenseKeys": null, "price": 49000, "productCode": "A14D.008", "productId": 19249, "productName": "APPLE WATCH DÁN MÀN HÌNH PPF FULL CAO CẤP MẶT TRƯỚC SIZE 38MM", "quantity": 2}], "orderStatusId": 8, "otherFeeAmount": 0, "paymentDiscountAmount": 0, "preOrder": false, "realPayAmount": 54098000, "shippingAmount": 0, "shippingMethod": 0, "shippingMethodName": "Đơn nhận tại cửa hàng", "statusId": 5, "statusName": "Đã nhận hàng", "storeBillId": 3429503, "syncDate": "2024-09-05T11:49:48.6", "totalAfterDiscountAmount": 54098000, "totalAmount": 54098000, "trackingUrl": ""}, "errorCode": null, "isSuccess": true, "message": null, "status": 200}
+    at D:\Automation-API\tests\03-customer-orders.spec.ts:49:25
+```
+
+# Test source
+
+```ts
+   1 | // tests/customer-orders.spec.ts
+   2 | import { test, expect, request } from '@playwright/test';
+   3 | import { CustomerOrdersApi,CustomerOrderDetailApi } from '../pom/03-customer-orders-api.pom';
+   4 |
+   5 | test.describe('API: Customer Orders', () => {
+   6 |   test('007 - Lấy danh sách đơn hàng theo số điện thoại theo ngày', async () => {
+   7 |     const requestContext = await request.newContext();
+   8 |     const ordersApi = new CustomerOrdersApi(requestContext);
+   9 |
+  10 |     const response = await ordersApi.getCustomerOrders({
+  11 |       phone: '0931431784',
+  12 |       customerId: null,
+  13 |       fromDate: '2024-08-25',
+  14 |       toDate: '2024-11-11',
+  15 |       pageSize: 110,
+  16 |       pageIndex: 1,
+  17 |       status: 0
+  18 |     });
+  19 |
+  20 |     const responseBody = await response.json();
+  21 |
+  22 |     // 🧪 Kiểm tra phản hồi hợp lệ
+  23 |     expect(response.status()).toBe(200);
+  24 |     expect(responseBody).toBeTruthy();
+  25 |     console.log('📦 Danh sách đơn hàng:', responseBody);
+  26 |
+  27 |     // (Tuỳ theo API: kiểm tra có kết quả, đúng cấu trúc,...)
+  28 |     expect(Array.isArray(responseBody.result?.items)).toBe(false);
+  29 |   });
+  30 | });
+  31 |
+  32 | test.describe('API: Chi tiết đơn hàng', () => {
+  33 |   test('008 - Lấy chi tiết đơn hàng theo ID', async () => {
+  34 |     const requestContext = await request.newContext();
+  35 |     const orderDetailApi = new CustomerOrderDetailApi(requestContext);
+  36 |
+  37 |     const response = await orderDetailApi.getOrderDetail({
+  38 |       id: 'b7a2af665ebfa3113b883add41052aad',
+  39 |       phone: null,
+  40 |       orderCode: null
+  41 |     });
+  42 |
+  43 |     expect(response.status()).toBe(200);
+  44 |
+  45 |     const orderDetail = await response.json();
+  46 |     console.log('📦 FULL RESPONSE JSON:', orderDetail);
+  47 |
+  48 |     // Kiểm tra có trường `success`
+> 49 |     expect(orderDetail).toHaveProperty('success');
+     |                         ^ Error: expect(received).toHaveProperty(path)
+  50 |     expect(orderDetail.success).toBe(true);
+  51 |
+  52 |     // Kiểm tra `result` có tồn tại và có đúng ID
+  53 |     expect(orderDetail.result).toBeDefined();
+  54 |     expect(orderDetail.result.id).toBe('b7a2af665ebfa3113b883add41052aad');
+  55 |   });
+  56 | });
+```

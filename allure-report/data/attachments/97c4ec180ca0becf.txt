@@ -1,0 +1,173 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: OnWheel - Danh sách đơn đang giao >> 009 - Lấy toàn bộ danh sách đơn hàng OnWheel theo ngày và branch
+- Location: D:\Automation-API\tests\04-onwheel.spec.ts:6:7
+
+# Error details
+
+```
+Error: apiRequestContext.post: getaddrinfo ENOTFOUND dev.api.cps.onl
+Call log:
+  - → POST https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel/list
+    - user-agent: QC-TEST
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - X-Sep-RequestId: bf9c93d9-4266-458c-9ea0-403c59fe7929
+    - X-Sep-RequestDate: 2025-04-15T17:13:00
+    - X-Sep-ClientId: CPS-WEB
+    - X-Sep-Signature: A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=
+    - Content-Type: application/json
+    - X-Sep-User: {"CenterId":12869,"BranchId":101,"UserId":1001,"UserName":"john.doe","UserTitleId":2,"AppId":"YourAppId1","SeassonId":"bf9c93d9-4266-458c-9ea0-403c59fe7929"}
+    - content-length: 158
+
+    at LogisticsOnWheelApi.getOnWheelList (D:\Automation-API\pom\04-onwheel.pom.ts:36:31)
+    at D:\Automation-API\tests\04-onwheel.spec.ts:10:41
+```
+
+# Test source
+
+```ts
+   1 | // pom/logistics-onwheel-api.pom.ts
+   2 | import { APIRequestContext, APIResponse } from '@playwright/test';
+   3 |
+   4 | export class LogisticsOnWheelApi {
+   5 |   constructor(private request: APIRequestContext) {}
+   6 |
+   7 |   async getOnWheelList(): Promise<APIResponse> {
+   8 |     const headers = {
+   9 |       'User-Agent': 'QC-TEST',
+   10 |       'X-Sep-RequestId': 'bf9c93d9-4266-458c-9ea0-403c59fe7929',
+   11 |       'X-Sep-RequestDate': '2025-04-15T17:13:00',
+   12 |       'X-Sep-ClientId': 'CPS-WEB',
+   13 |       'X-Sep-Signature': 'A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=',
+   14 |       'Content-Type': 'application/json',
+   15 |       'X-Sep-User': JSON.stringify({
+   16 |         CenterId: 12869,
+   17 |         BranchId: 101,
+   18 |         UserId: 1001,
+   19 |         UserName: 'john.doe',
+   20 |         UserTitleId: 2,
+   21 |         AppId: 'YourAppId1',
+   22 |         SeassonId: 'bf9c93d9-4266-458c-9ea0-403c59fe7929'
+   23 |       })
+   24 |     };
+   25 |
+   26 |     const body = {
+   27 |       FromDate: '2025-04-01T00:00:00',
+   28 |       ToDate: '2025-04-15T23:59:09.8184918+07:00',
+   29 |       BranchIds: [139, 182],
+   30 |       Phone: '',
+   31 |       OWOrderCode: '',
+   32 |       AutoCode: '',
+   33 |       Status: 'ALL'
+   34 |     };
+   35 |
+>  36 |     return await this.request.post(
+      |                               ^ Error: apiRequestContext.post: getaddrinfo ENOTFOUND dev.api.cps.onl
+   37 |       'https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel/list',
+   38 |       { headers, data: body }
+   39 |     );
+   40 |   }
+   41 | }
+   42 |
+   43 | export class CreateOnWheelApi {
+   44 |     constructor(private request: APIRequestContext) {}
+   45 |   
+   46 |     async createOnWheelOrder(): Promise<APIResponse> {
+   47 |       const headers = {
+   48 |         'User-Agent': 'QC-TEST',
+   49 |         'X-Sep-RequestId': 'bf9c93d9-4266-458c-9ea0-403c59fe7929',
+   50 |         'X-Sep-RequestDate': '2025-12-31T10:13:00',
+   51 |         'X-Sep-ClientId': 'CPS-WEB',
+   52 |         'X-Sep-Signature': 'A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=',
+   53 |         'Content-Type': 'application/json',
+   54 |         'X-Sep-User': JSON.stringify({
+   55 |           CenterId: 12869,
+   56 |           BranchId: 101,
+   57 |           UserId: 1001,
+   58 |           UserName: 'john.doe',
+   59 |           UserTitleId: 2,
+   60 |           AppId: 'YourAppId1',
+   61 |           SeassonId: 'bf9c93d9-4266-458c-9ea0-403c59fe7929'
+   62 |         })
+   63 |       };
+   64 |   
+   65 |       const body = {
+   66 |         RequestId: '1c78724c-7485-44ae-8ae2-a5c5c92d2d9a',
+   67 |         PartnerOrderNo: null,
+   68 |         BranchId: 139,
+   69 |         ContactPhone: '0919792729',
+   70 |         ContactName: 'A Chuẩn',
+   71 |         ContactAddress: '41/32/21 Gò Cát',
+   72 |         Address: {
+   73 |           ProvinceId: 30,
+   74 |           ProvinceName: 'TP HCM',
+   75 |           DistrictId: 9,
+   76 |           DistrictName: 'Tp Thủ Đức',
+   77 |           WardId: 4562,
+   78 |           WardName: 'P Phú Hữu'
+   79 |         },
+   80 |         Details: [
+   81 |           {
+   82 |             Index: 0,
+   83 |             AutoCode: 'SP.134NTH.25.03.000324',
+   84 |             TotalAmount: 7290000,
+   85 |             CodAmount: 4290000,
+   86 |             Deadline: '2025-01-06T14:15:22Z',
+   87 |             ContactPhone: '0932174996',
+   88 |             ContactName: 'Anh Quyền Chí Long',
+   89 |             ContactAddress: '25 Nguyễn Văn Vỹ, P.12, Q. Tân Bình, HCM',
+   90 |             Notes: 'Giao hàng trước: 15/03/2025 17:08',
+   91 |             Address: {
+   92 |               ProvinceId: 30,
+   93 |               ProvinceName: 'TP Hồ Chí Minh',
+   94 |               DistrictId: 1,
+   95 |               DistrictName: 'Q. Tân Bình',
+   96 |               WardId: 4524,
+   97 |               WardName: 'P.12'
+   98 |             }
+   99 |           }
+  100 |         ]
+  101 |       };
+  102 |   
+  103 |       return await this.request.post(
+  104 |         'https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel',
+  105 |         { headers, data: body }
+  106 |       );
+  107 |     }
+  108 |   }
+  109 |
+  110 |   export class UpdateOnWheelStatusApi {
+  111 |     constructor(private request: APIRequestContext) {}
+  112 |   
+  113 |     async updateStatus(deliveryNo: string): Promise<APIResponse> {
+  114 |       const headers = {
+  115 |         'User-Agent': 'QC-TEST',
+  116 |         'X-Sep-RequestId': 'bf9c93d9-4266-458c-9ea0-403c59fe7929',
+  117 |         'X-Sep-RequestDate': '2025-12-31T09:53:00',
+  118 |         'X-Sep-ClientId': 'CPS-WEB',
+  119 |         'X-Sep-Signature': 'A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=',
+  120 |         'Content-Type': 'application/json',
+  121 |         'X-Sep-User': JSON.stringify({
+  122 |           CenterId: 12869,
+  123 |           BranchId: 101,
+  124 |           UserId: 1001,
+  125 |           UserName: 'john.doe',
+  126 |           UserTitleId: 2,
+  127 |           AppId: 'YourAppId1',
+  128 |           SeassonId: 'bf9c93d9-4266-458c-9ea0-403c59fe7929'
+  129 |         })
+  130 |       };
+  131 |   
+  132 |       const url = `https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel/update-status/${deliveryNo}`;
+  133 |   
+  134 |       return await this.request.post(url, { headers });
+  135 |     }
+  136 |   }
+```

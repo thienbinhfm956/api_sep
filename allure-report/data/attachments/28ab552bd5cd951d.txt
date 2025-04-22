@@ -1,0 +1,55 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: Lấy danh sách chi nhánh theo centerId >> Trả về danh sách chi nhánh hợp lệ với access token đúng
+- Location: D:\Automation-API\tests\03-branch.spec.ts:7:7
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at D:\Automation-API\tests\03-branch.spec.ts:25:48
+```
+
+# Test source
+
+```ts
+   1 | // tests/get-branch.spec.ts
+   2 | import { test, expect, request } from '@playwright/test';
+   3 | import { TokenAuthPage } from '../pom/01-token.pom';
+   4 | import { BranchAPI } from '../pom/branch-api.pom';
+   5 |
+   6 | test.describe('API: Lấy danh sách chi nhánh theo centerId', () => {
+   7 |   test('Trả về danh sách chi nhánh hợp lệ với access token đúng', async () => {
+   8 |     const requestContext = await request.newContext();
+   9 |
+  10 |     // 🔐 Bước 1: Đăng nhập để lấy token
+  11 |     const auth = new TokenAuthPage(requestContext);
+  12 |     const accessToken = await auth.login('admin', 'Dev@20#24@');
+  13 |
+  14 |     // ✅ Bước 2: Gọi API GetBranchs
+  15 |     const branchAPI = new BranchAPI(requestContext);
+  16 |     const response = await branchAPI.getBranches(12869, accessToken);
+  17 |
+  18 |     // 🧪 Bước 3: Kiểm tra kết quả
+  19 |     expect(response.status()).toBe(200);
+  20 |
+  21 |     const responseBody = await response.json();
+  22 |     console.log('📦 Kết quả trả về:', responseBody);
+  23 |
+  24 |     // Kiểm tra kết quả đúng định dạng
+> 25 |     expect(Array.isArray(responseBody.result)).toBe(true);
+     |                                                ^ Error: expect(received).toBe(expected) // Object.is equality
+  26 |     expect(responseBody.result.length).toBeGreaterThan(0);
+  27 |   });
+  28 | });
+  29 |
+```

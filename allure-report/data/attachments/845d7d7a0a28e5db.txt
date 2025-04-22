@@ -1,0 +1,44 @@
+📦 Merge Check Response: {
+  HttpStatusCode: 200,
+  IsSuccess: true,
+  Message: null,
+  Data: [
+    {
+      OrderId: '258OJDPF',
+      Distance: '6.5',
+      Duration: 2160,
+      Ratio: 61.06,
+      Status: 'ACCEPTED',
+      DriverName: 'Thành ERP',
+      DriverPhone: '84932174996'
+    },
+    {
+      OrderId: '255K7G0T',
+      Distance: '6.5',
+      Duration: 2160,
+      Ratio: 66.37,
+      Status: 'IN PROCESS',
+      DriverName: 'Thị Thu',
+      DriverPhone: '84582436720'
+    },
+    {
+      OrderId: '25UPQZXP',
+      Distance: '2.6',
+      Duration: 1218,
+      Ratio: 100,
+      Status: 'IN PROCESS',
+      DriverName: 'Thị Thu',
+      DriverPhone: '84582436720'
+    },
+    {
+      OrderId: '251E87ZQ',
+      Distance: '7.6',
+      Duration: 2430,
+      Ratio: 100,
+      Status: 'ACCEPTED',
+      DriverName: 'EV - 133 - SÂM - Ahafast',
+      DriverPhone: '84935095650'
+    }
+  ],
+  Error: null
+}

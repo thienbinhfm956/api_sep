@@ -1,0 +1,57 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: Customer Orders >> 007 - Verify API trả về đơn hàng theo số điện thoại và ngày
+- Location: D:\Automation-API\tests\03-customer-orders.spec.ts:6:7
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at D:\Automation-API\tests\03-customer-orders.spec.ts:28:55
+```
+
+# Test source
+
+```ts
+   1 | // tests/customer-orders.spec.ts
+   2 | import { test, expect, request } from '@playwright/test';
+   3 | import { CustomerOrdersApi } from '../pom/customer-orders-api.pom';
+   4 |
+   5 | test.describe('API: Customer Orders', () => {
+   6 |   test('007 - Verify API trả về đơn hàng theo số điện thoại và ngày', async () => {
+   7 |     const requestContext = await request.newContext();
+   8 |     const ordersApi = new CustomerOrdersApi(requestContext);
+   9 |
+  10 |     const response = await ordersApi.getCustomerOrders({
+  11 |       phone: '0931431784',
+  12 |       customerId: null,
+  13 |       fromDate: '2024-08-25',
+  14 |       toDate: '2024-11-11',
+  15 |       pageSize: 110,
+  16 |       pageIndex: 1,
+  17 |       status: 0
+  18 |     });
+  19 |
+  20 |     const responseBody = await response.json();
+  21 |
+  22 |     // 🧪 Kiểm tra phản hồi hợp lệ
+  23 |     expect(response.status()).toBe(200);
+  24 |     expect(responseBody).toBeTruthy();
+  25 |     console.log('📦 Danh sách đơn hàng:', responseBody);
+  26 |
+  27 |     // (Tuỳ theo API: kiểm tra có kết quả, đúng cấu trúc,...)
+> 28 |     expect(Array.isArray(responseBody.result?.items)).toBe(true);
+     |                                                       ^ Error: expect(received).toBe(expected) // Object.is equality
+  29 |   });
+  30 | });
+  31 |
+```

@@ -1,0 +1,101 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: Cập nhật trạng thái vận đơn OnWheel >> 011 - Cập nhật trạng thái thành công với mã vận đơn hợp lệ
+- Location: D:\Automation-API\tests\04-onwheel.spec.ts:54:7
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 200
+Received: 405
+    at D:\Automation-API\tests\04-onwheel.spec.ts:61:31
+```
+
+# Test source
+
+```ts
+   1 | // tests/logistics-onwheel.spec.ts
+   2 | import { test, expect, request } from '@playwright/test';
+   3 | import { LogisticsOnWheelApi,CreateOnWheelApi,UpdateOnWheelStatusApi } from '../pom/04-onwheel.pom';
+   4 |
+   5 | test.describe('API: OnWheel - Danh sách đơn đang giao', () => {
+   6 |   test('009 - Lấy toàn bộ danh sách đơn hàng OnWheel theo ngày và branch', async () => {
+   7 |     const context = await request.newContext();
+   8 |     const logisticsApi = new LogisticsOnWheelApi(context);
+   9 |
+  10 |     const response = await logisticsApi.getOnWheelList();
+  11 |     const json = await response.json();
+  12 |
+  13 |     console.log('📦 Kết quả trả về:', json);
+  14 |
+  15 |     // ✅ Kiểm tra HTTP status code
+  16 |     expect(response.status()).toBe(200);
+  17 |
+  18 |     // ✅ Kiểm tra response body chuẩn
+  19 |     expect(json).toHaveProperty('IsSuccess', true);
+  20 |     expect(json).toHaveProperty('HttpStatusCode', 200);
+  21 |     expect(json).toHaveProperty('Data');
+  22 |     expect(Array.isArray(json.Data)).toBe(true);
+  23 |     expect(json.Data.length).toBeGreaterThan(0);
+  24 |
+  25 |     // ✅ Kiểm tra một phần tử trong mảng
+  26 |     const item = json.Data[0];
+  27 |     expect(item).toHaveProperty('DeliveryNo');
+  28 |     expect(item).toHaveProperty('AutoCode');
+  29 |     expect(item).toHaveProperty('Status');
+  30 |     expect(['ASSIGNING', 'COMPLETED', 'CANCELLED', 'ACCEPTED']).toContain(item.Status);
+  31 |   });
+  32 | });
+  33 |
+  34 | test.describe('API: Tạo đơn hàng giao OnWheel', () => {
+  35 |   test('010 - Tạo đơn giao hàng OnWheel thành công', async () => {
+  36 |     const requestContext = await request.newContext();
+  37 |     const createApi = new CreateOnWheelApi(requestContext);
+  38 |
+  39 |     const response = await createApi.createOnWheelOrder();
+  40 |     const json = await response.json();
+  41 |
+  42 |     console.log('📦 Kết quả tạo đơn:', json);
+  43 |
+  44 |     // ✅ Kiểm tra phản hồi thành công
+  45 |     expect(response.status()).toBe(200);
+  46 |     expect(json).toHaveProperty('IsSuccess', true);
+  47 |     expect(json).toHaveProperty('HttpStatusCode', 200);
+  48 |     expect(json.Error).toBeNull();
+  49 |     expect(json.Data).toBeNull(); // Vì Data = null khi tạo thành công
+  50 |   });
+  51 | });
+  52 |
+  53 | test.describe('API: Cập nhật trạng thái vận đơn OnWheel', () => {
+  54 |   test('011 - Cập nhật trạng thái thành công với mã vận đơn hợp lệ', async () => {
+  55 |     const requestContext = await request.newContext();
+  56 |     const api = new UpdateOnWheelStatusApi(requestContext);
+  57 |
+  58 |     const deliveryNo = '25G7QHLV'; // 🔁 Mã vận đơn thật từ môi trường
+  59 |     const response = await api.updateStatus(deliveryNo);
+  60 |
+> 61 |     expect(response.status()).toBe(200);
+     |                               ^ Error: expect(received).toBe(expected) // Object.is equality
+  62 |
+  63 |     const body = await response.json();
+  64 |     console.log('📦 Response JSON:', body);
+  65 |
+  66 |     // ✅ Kiểm tra nội dung JSON đúng định dạng và giá trị
+  67 |     expect(body).toMatchObject({
+  68 |       HttpStatusCode: 200,
+  69 |       IsSuccess: true,
+  70 |       Message: 'Lấy thông tin vận đơn thành công!',
+  71 |       Data: false,
+  72 |       Error: null
+  73 |     });
+  74 |   });
+  75 | });
+```

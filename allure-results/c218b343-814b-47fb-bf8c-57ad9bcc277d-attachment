@@ -1,0 +1,143 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: Kiểm tra có thể gộp đơn giao không >> 012 - Lấy toàn bộ Danh sách đơn có thể ghép chuyến OnWheel
+- Location: D:\Automation-API\tests\04-onwheel.spec.ts:78:7
+
+# Error details
+
+```
+Error: apiRequestContext.post: getaddrinfo ENOTFOUND dev.api.cps.onl
+Call log:
+  - → POST https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel/check-shipment-can-merge
+    - user-agent: QC-TEST
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - X-Sep-RequestId: bf9c93d9-4266-458c-9ea0-403c59fe7929
+    - X-Sep-RequestDate: 2025-12-31T13:41:00
+    - X-Sep-ClientId: CPS-WEB
+    - X-Sep-Signature: A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=
+    - Content-Type: application/json
+    - X-Sep-User: {"CenterId":12869,"BranchId":101,"UserId":1001,"UserName":"john.doe","UserTitleId":2,"AppId":"YourAppId1","SeassonId":"bf9c93d9-4266-458c-9ea0-403c59fe7929"}
+    - content-length: 123
+
+    at CheckShipmentMergeApi.checkCanMerge (D:\Automation-API\pom\04-onwheel.pom.ts:169:33)
+    at D:\Automation-API\tests\04-onwheel.spec.ts:82:32
+```
+
+# Test source
+
+```ts
+   69 |         ContactPhone: '0919792729',
+   70 |         ContactName: 'A Chuẩn',
+   71 |         ContactAddress: '41/32/21 Gò Cát',
+   72 |         Address: {
+   73 |           ProvinceId: 30,
+   74 |           ProvinceName: 'TP HCM',
+   75 |           DistrictId: 9,
+   76 |           DistrictName: 'Tp Thủ Đức',
+   77 |           WardId: 4562,
+   78 |           WardName: 'P Phú Hữu'
+   79 |         },
+   80 |         Details: [
+   81 |           {
+   82 |             Index: 0,
+   83 |             AutoCode: 'SP.134NTH.25.03.000324',
+   84 |             TotalAmount: 7290000,
+   85 |             CodAmount: 4290000,
+   86 |             Deadline: '2025-01-06T14:15:22Z',
+   87 |             ContactPhone: '0932174996',
+   88 |             ContactName: 'Anh Quyền Chí Long',
+   89 |             ContactAddress: '25 Nguyễn Văn Vỹ, P.12, Q. Tân Bình, HCM',
+   90 |             Notes: 'Giao hàng trước: 15/03/2025 17:08',
+   91 |             Address: {
+   92 |               ProvinceId: 30,
+   93 |               ProvinceName: 'TP Hồ Chí Minh',
+   94 |               DistrictId: 1,
+   95 |               DistrictName: 'Q. Tân Bình',
+   96 |               WardId: 4524,
+   97 |               WardName: 'P.12'
+   98 |             }
+   99 |           }
+  100 |         ]
+  101 |       };
+  102 |   
+  103 |       return await this.request.post(
+  104 |         'https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel',
+  105 |         { headers, data: body }
+  106 |       );
+  107 |     }
+  108 |   }
+  109 |
+  110 |   export class UpdateOnWheelStatusApi {
+  111 |     constructor(private request: APIRequestContext) {}
+  112 |   
+  113 |     async updateStatus(deliveryNo: string): Promise<APIResponse> {
+  114 |       const headers = {
+  115 |         'User-Agent': 'QC-TEST',
+  116 |         'X-Sep-RequestId': 'bf9c93d9-4266-458c-9ea0-403c59fe7929',
+  117 |         'X-Sep-RequestDate': '2025-12-31T09:53:00',
+  118 |         'X-Sep-ClientId': 'CPS-WEB',
+  119 |         'X-Sep-Signature': 'A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=',
+  120 |         'Content-Type': 'application/json',
+  121 |         'X-Sep-User': JSON.stringify({
+  122 |           CenterId: 12869,
+  123 |           BranchId: 101,
+  124 |           UserId: 1001,
+  125 |           UserName: 'john.doe',
+  126 |           UserTitleId: 2,
+  127 |           AppId: 'YourAppId1',
+  128 |           SeassonId: 'bf9c93d9-4266-458c-9ea0-403c59fe7929'
+  129 |         })
+  130 |       };
+  131 |   
+  132 |       const url = `https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel/update-status/${deliveryNo}`;
+  133 |   
+  134 |       return await this.request.post(url, { headers });
+  135 |     }
+  136 |   }
+  137 |
+  138 |   export class CheckShipmentMergeApi {
+  139 |     constructor(private request: APIRequestContext) {}
+  140 |   
+  141 |     async checkCanMerge(): Promise<APIResponse> {
+  142 |       const headers = {
+  143 |         'User-Agent': 'QC-TEST',
+  144 |         'X-Sep-RequestId': 'bf9c93d9-4266-458c-9ea0-403c59fe7929',
+  145 |         'X-Sep-RequestDate': '2025-12-31T13:41:00',
+  146 |         'X-Sep-ClientId': 'CPS-WEB',
+  147 |         'X-Sep-Signature': 'A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=',
+  148 |         'Content-Type': 'application/json',
+  149 |         'X-Sep-User': JSON.stringify({
+  150 |           CenterId: 12869,
+  151 |           BranchId: 101,
+  152 |           UserId: 1001,
+  153 |           UserName: 'john.doe',
+  154 |           UserTitleId: 2,
+  155 |           AppId: 'YourAppId1',
+  156 |           SeassonId: 'bf9c93d9-4266-458c-9ea0-403c59fe7929'
+  157 |         })
+  158 |       };
+  159 |   
+  160 |       const body = {
+  161 |         Addresses: [
+  162 |           "134 Nguyễn Thái Học, Phạm Ngũ Lão, Q.1, TP HCM",
+  163 |           "25 Nguyễn Văn Vỹ, P.12, Q. Tân Bình, HCM"
+  164 |         ]
+  165 |       };
+  166 |   
+  167 |       const url = `https://dev.api.cps.onl/8661ace9-74b3-4223-8c74-9434c7bdb82f/logistic/v1/onwheel/check-shipment-can-merge`;
+  168 |   
+> 169 |       return await this.request.post(url, {
+      |                                 ^ Error: apiRequestContext.post: getaddrinfo ENOTFOUND dev.api.cps.onl
+  170 |         headers,
+  171 |         data: body
+  172 |       });
+  173 |     }
+  174 |   }
+```

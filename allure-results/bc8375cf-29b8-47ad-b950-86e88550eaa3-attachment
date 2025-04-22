@@ -1,0 +1,53 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: 008 - Kiểm tra gọi API GetBranchs với token thủ công
+- Location: D:\Automation-API\tests\03-branch.spec.ts:3:5
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at D:\Automation-API\tests\03-branch.spec.ts:24:38
+```
+
+# Test source
+
+```ts
+   1 | import { test, expect, request } from '@playwright/test';
+   2 |
+   3 | test('008 - Kiểm tra gọi API GetBranchs với token thủ công', async () => {
+   4 |   const requestContext = await request.newContext();
+   5 |
+   6 |   const token = `eyJhbGciOiJSUzI1NiIsImtpZCI6IkE4QzU4QT...`; // ✂️ rút gọn, bạn thay full token ở đây
+   7 |
+   8 |   const response = await requestContext.get(
+   9 |     'https://uat-app.cps.onl/api/services/app/MaintenanceCatagory/GetBranchs?centerId=12869',
+  10 |     {
+  11 |       headers: {
+  12 |         'Authorization': `Bearer ${token}`,
+  13 |         'Accept': 'application/json'
+  14 |       }
+  15 |     }
+  16 |   );
+  17 |
+  18 |   console.log('📥 Status:', response.status());
+  19 |   const body = await response.json();
+  20 |   console.log('📦 Response JSON:', body);
+  21 |
+  22 |   // 🧪 Expectation
+  23 |   //expect(response.status()).toBe(200);
+> 24 |   expect(Array.isArray(body.result)).toBe(true);
+     |                                      ^ Error: expect(received).toBe(expected) // Object.is equality
+  25 |   expect(body.result.length).toBeGreaterThan(0);
+  26 | });
+  27 |
+```

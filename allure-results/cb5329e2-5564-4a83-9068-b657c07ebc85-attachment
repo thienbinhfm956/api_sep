@@ -1,0 +1,144 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: 004 - Lấy ra 1 Đề nghị nhập cũ có thông tin chi tiết với RequestId bất kì 
+- Location: D:\Automation-API\tests\01-dnnc.spec.ts:55:5
+
+# Error details
+
+```
+Error: apiRequestContext.post: read ECONNRESET
+Call log:
+  - → POST https://uat-app.cps.onl/api/TokenAuth/Authenticate
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.35 Safari/537.36
+    - accept: text/plain
+    - accept-encoding: gzip,deflate,br
+    - Content-Type: application/json-patch+json
+    - X-XSRF-TOKEN: null
+    - content-length: 58
+
+    at TokenAuthPage.login (D:\Automation-API\pom\01-token.pom.ts:11:45)
+    at D:\Automation-API\tests\01-dnnc.spec.ts:57:35
+```
+
+# Test source
+
+```ts
+   1 | import { APIRequestContext } from "@playwright/test";
+   2 |
+   3 | export class TokenAuthPage {
+   4 |     request: APIRequestContext;
+   5 |
+   6 |     constructor(request: APIRequestContext) {
+   7 |         this.request = request;
+   8 |     }
+   9 |
+   10 |     async login(username: string, password: string): Promise<string> {
+>  11 |         const response = await this.request.post(
+      |                                             ^ Error: apiRequestContext.post: read ECONNRESET
+   12 |             'https://uat-app.cps.onl/api/TokenAuth/Authenticate',
+   13 |             {
+   14 |                 headers: {
+   15 |                     'accept': 'text/plain',
+   16 |                     'Content-Type': 'application/json-patch+json',
+   17 |                     'X-XSRF-TOKEN': 'null'
+   18 |                 },
+   19 |                 data: {
+   20 |                     userNameOrEmailAddress: username,
+   21 |                     password: password
+   22 |                 }
+   23 |             }
+   24 |         );
+   25 |
+   26 |         if (response.status() !== 200) {
+   27 |             throw new Error(`Login failed: ${response.status()} - ${await response.text()}`);
+   28 |         }
+   29 |
+   30 |         const json = await response.json();
+   31 |         return json.result.accessToken;
+   32 |     }
+   33 | }
+   34 |
+   35 | export class OldImportApiPage {
+   36 |     request: APIRequestContext;
+   37 |     token: string;
+   38 |
+   39 |     constructor(request: APIRequestContext, token: string) {
+   40 |         this.request = request;
+   41 |         this.token = token;
+   42 |     }
+   43 |
+   44 |     async getAppLoadStatuses(centerId: number) {
+   45 |         const response = await this.request.get(
+   46 |             `https://uat-app.cps.onl/api/services/app/OldImportReq/AppLoadStatuses?centerId=${centerId}`,
+   47 |             {
+   48 |                 headers: {
+   49 |                     'accept': 'text/plain',
+   50 |                     'Authorization': `Bearer ${this.token}`,
+   51 |                     'X-XSRF-TOKEN': this.token // YC them token 
+   52 |                 }
+   53 |             }
+   54 |         );
+   55 |
+   56 |         if (response.status() !== 200) {
+   57 |             throw new Error(`Lỗi khi gọi API: ${response.status()} - ${await response.text()}`);
+   58 |         }
+   59 |
+   60 |         return await response.json();
+   61 |     }
+   62 |
+   63 |     async getAppLoadList(
+   64 |         centerId: number,
+   65 |         branchIds: number[],
+   66 |         statusIds: number[],
+   67 |         fromDate: string,
+   68 |         toDate: string
+   69 |     ) {
+   70 |         const response = await this.request.post(
+   71 |             'https://uat-app.cps.onl/api/services/app/OldImportReq/AppLoadList',
+   72 |             {
+   73 |                 headers: {
+   74 |                     'accept': 'text/plain',
+   75 |                     'Content-Type': 'application/json-patch+json',
+   76 |                     'Authorization': `Bearer ${this.token}`,
+   77 |                     'X-XSRF-TOKEN': this.token
+   78 |                 },
+   79 |                 data: {
+   80 |                     centerId,
+   81 |                     branchIds,
+   82 |                     statusIds,
+   83 |                     fromDate,
+   84 |                     toDate
+   85 |                 }
+   86 |             }
+   87 |         );
+   88 |
+   89 |         if (response.status() !== 200) {
+   90 |             throw new Error(`Lỗi khi gọi AppLoadList: ${response.status()} - ${await response.text()}`);
+   91 |         }
+   92 |
+   93 |         const result = await response.json();
+   94 |         return result;
+   95 |     }
+   96 |
+   97 |     async getAppLoadDetail(requestId: number, centerId: number, editPermission: boolean) {
+   98 |         const response = await this.request.post(
+   99 |             'https://uat-app.cps.onl/api/services/app/OldImportReq/AppLoadDetail',
+  100 |             {
+  101 |                 headers: {
+  102 |                     'accept': 'text/plain',
+  103 |                     'Content-Type': 'application/json-patch+json',
+  104 |                     'Authorization': `Bearer ${this.token}`,
+  105 |                     'X-XSRF-TOKEN': this.token
+  106 |                 },
+  107 |                 data: {
+  108 |                     requestId,
+  109 |                     centerId,
+  110 |                     editPermission
+  111 |                 }
+```

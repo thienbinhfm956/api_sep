@@ -1,0 +1,95 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: Customer Orders >> 007 - Lấy danh sách đơn hàng theo số điện thoại theo ngày
+- Location: D:\Automation-API\tests\03-customer-orders.spec.ts:6:7
+
+# Error details
+
+```
+Error: apiRequestContext.post: getaddrinfo ENOTFOUND dev.api.cps.onl
+Call log:
+  - → POST https://dev.api.cps.onl/customer/v2/Customer/Orders
+    - user-agent: QC-TEST
+    - accept: */*
+    - accept-encoding: gzip,deflate,br
+    - X-Sep-RequestId: bf9c93d9-4266-458c-9ea0-403c59fe7929
+    - X-Sep-RequestDate: 2024-08-23
+    - X-Sep-ClientId: SEP.DEV
+    - X-Sep-Signature: aaaa
+    - Content-Type: application/json
+    - content-length: 126
+
+    at CustomerOrdersApi.getCustomerOrders (D:\Automation-API\pom\03-customer-orders-api.pom.ts:15:41)
+    at D:\Automation-API\tests\03-customer-orders.spec.ts:10:38
+```
+
+# Test source
+
+```ts
+   1 | import { APIRequestContext, APIResponse } from '@playwright/test';
+   2 |
+   3 | export class CustomerOrdersApi {
+   4 |   constructor(private request: APIRequestContext) {}
+   5 |
+   6 |   async getCustomerOrders(body: {
+   7 |     phone: string;
+   8 |     customerId: string | null;
+   9 |     fromDate: string;
+  10 |     toDate: string;
+  11 |     pageSize: number;
+  12 |     pageIndex: number;
+  13 |     status: number;
+  14 |   }): Promise<APIResponse> {
+> 15 |     const response = await this.request.post(
+     |                                         ^ Error: apiRequestContext.post: getaddrinfo ENOTFOUND dev.api.cps.onl
+  16 |       'https://dev.api.cps.onl/customer/v2/Customer/Orders',
+  17 |       {
+  18 |         headers: {
+  19 |           'User-Agent': 'QC-TEST',
+  20 |           'X-Sep-RequestId': 'bf9c93d9-4266-458c-9ea0-403c59fe7929',
+  21 |           'X-Sep-RequestDate': '2024-08-23',
+  22 |           'X-Sep-ClientId': 'SEP.DEV',
+  23 |           'X-Sep-Signature': 'aaaa',
+  24 |           'Content-Type': 'application/json',
+  25 |         },
+  26 |         data: body,
+  27 |       }
+  28 |     );
+  29 |
+  30 |     return response;
+  31 |   }
+  32 | }
+  33 | export class CustomerOrderDetailApi {
+  34 |   constructor(private request: APIRequestContext) {}
+  35 |
+  36 |   async getOrderDetail(body: {
+  37 |     id: string;
+  38 |     phone: string | null;
+  39 |     orderCode: string | null;
+  40 |   }): Promise<APIResponse> {
+  41 |     const response = await this.request.post(
+  42 |       'https://dev.api.cps.onl/customer/v2/Customer/OrderDetail',
+  43 |       {
+  44 |         headers: {
+  45 |           'User-Agent': 'QC-TEST',
+  46 |           'X-Sep-RequestId': 'bf9c93d9-4266-458c-9ea0-403c59fe7929',
+  47 |           'X-Sep-RequestDate': '2024-09-30 18:26:00',
+  48 |           'X-Sep-ClientId': 'CPS-WEB',
+  49 |           'X-Sep-Signature': 'A8kUBeOs4Br1GcWABFF78Z1yiHHCewN1wNPzHE57NIg=',
+  50 |           'Content-Type': 'application/json'
+  51 |         },
+  52 |         data: body
+  53 |       }
+  54 |     );
+  55 |
+  56 |     return response;
+  57 |   }
+  58 | }
+  59 |
+```

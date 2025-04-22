@@ -1,0 +1,17 @@
+✅ Kết quả toàn bộ trạng thái đề nghị nhập cũ: {
+  message: null,
+  result: [
+    { id: 1, name: 'Mới tạo', isChecked: true, visible: true },
+    { id: 2, name: 'Chờ duyệt', isChecked: false, visible: true },
+    { id: 3, name: 'Đã duyệt', isChecked: true, visible: true },
+    { id: 4, name: 'Từ chối', isChecked: false, visible: true },
+    { id: 5, name: 'Đã hoàn thành', isChecked: false, visible: true },
+    { id: 6, name: 'Hủy', isChecked: false, visible: true },
+    { id: 7, name: 'Đang chăm sóc', isChecked: false, visible: true }
+  ],
+  targetUrl: null,
+  success: true,
+  error: null,
+  unAuthorizedRequest: false,
+  __abp: true
+}

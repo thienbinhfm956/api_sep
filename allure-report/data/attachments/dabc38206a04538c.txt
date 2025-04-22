@@ -1,0 +1,81 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: API: Chi tiết đơn hàng >> 008 - Lấy chi tiết đơn hàng theo ID
+- Location: D:\Automation-API\tests\03-customer-orders.spec.ts:33:7
+
+# Error details
+
+```
+Error: expect(received).toBeDefined()
+
+Received: undefined
+    at D:\Automation-API\tests\03-customer-orders.spec.ts:51:25
+```
+
+# Test source
+
+```ts
+   1 | // tests/customer-orders.spec.ts
+   2 | import { test, expect, request } from '@playwright/test';
+   3 | import { CustomerOrdersApi,CustomerOrderDetailApi } from '../pom/03-customer-orders-api.pom';
+   4 |
+   5 | test.describe('API: Customer Orders', () => {
+   6 |   test('007 - Lấy danh sách đơn hàng theo số điện thoại theo ngày', async () => {
+   7 |     const requestContext = await request.newContext();
+   8 |     const ordersApi = new CustomerOrdersApi(requestContext);
+   9 |
+  10 |     const response = await ordersApi.getCustomerOrders({
+  11 |       phone: '0931431784',
+  12 |       customerId: null,
+  13 |       fromDate: '2024-08-25',
+  14 |       toDate: '2024-11-11',
+  15 |       pageSize: 110,
+  16 |       pageIndex: 1,
+  17 |       status: 0
+  18 |     });
+  19 |
+  20 |     const responseBody = await response.json();
+  21 |
+  22 |     // 🧪 Kiểm tra phản hồi hợp lệ
+  23 |     expect(response.status()).toBe(200);
+  24 |     expect(responseBody).toBeTruthy();
+  25 |     console.log('📦 Danh sách đơn hàng:', responseBody);
+  26 |
+  27 |     // (Tuỳ theo API: kiểm tra có kết quả, đúng cấu trúc,...)
+  28 |     expect(Array.isArray(responseBody.result?.items)).toBe(false);
+  29 |   });
+  30 | });
+  31 |
+  32 | test.describe('API: Chi tiết đơn hàng', () => {
+  33 |   test('008 - Lấy chi tiết đơn hàng theo ID', async () => {
+  34 |     const requestContext = await request.newContext();
+  35 |     const orderDetailApi = new CustomerOrderDetailApi(requestContext);
+  36 |
+  37 |     const response = await orderDetailApi.getOrderDetail({
+  38 |       id: 'b7a2af665ebfa3113b883add41052aad',
+  39 |       phone: null,
+  40 |       orderCode: null
+  41 |     });
+  42 |
+  43 |     const body = await response.json();
+  44 |
+  45 |     // ✅ Kiểm tra phản hồi
+  46 |     expect(response.status()).toBe(200);
+  47 |     expect(body).toBeTruthy();
+  48 |     console.log('📦 Chi tiết đơn hàng:', body);
+  49 |
+  50 |     // Tuỳ cấu trúc, kiểm tra chi tiết kết quả
+> 51 |     expect(body.result).toBeDefined();
+     |                         ^ Error: expect(received).toBeDefined()
+  52 |     expect(body.result.id).toBe('b7a2af665ebfa3113b883add41052aad');
+  53 |   });
+  54 | });
+  55 |
+  56 |
+```
