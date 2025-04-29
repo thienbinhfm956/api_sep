@@ -1,0 +1,7 @@
+📦 Kết quả trả về: {
+  type: 'https://tools.ietf.org/html/rfc9110#section-15.5.1',
+  title: 'One or more validation errors occurred.',
+  status: 400,
+  errors: { Statuses: [ 'The Statuses field is required.' ] },
+  traceId: '00-a432cd1ce1b73edd624e8f0a00b52785-552f480897c6c941-01'
+}

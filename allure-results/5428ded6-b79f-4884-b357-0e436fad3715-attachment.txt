@@ -1,0 +1,7 @@
+📦 Merge Check Response: {
+  HttpStatusCode: 200,
+  IsSuccess: false,
+  Message: 'Lỗi kiểm tra ghép chuyến.',
+  Data: null,
+  Error: null
+}

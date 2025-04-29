@@ -78,14 +78,14 @@ class TelegramReporter implements Reporter {
       const msg = this.formatMessage();
 
       const payload = {
-          chat_id: -1002513637187,
+          chat_id: -1002630313735,
           text: msg,
           parse_mode: 'MarkdownV2', // Enable MarkdownV2 formatting
       };
 
       console.log(msg);
 
-      const res = await fetch(`https://api.telegram.org/bot7715921998:AAGRB-M-Hl0l-aPjkBLa4fYo0DdlpDTq4ZQ/sendMessage`, {
+      const res = await fetch(`https://api.telegram.org/bot8008298874:AAGECgLSwZX64WLNuMXrdL__ESIhqJ0C7ZM/sendMessage`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
